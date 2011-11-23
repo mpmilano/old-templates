@@ -1,30 +1,38 @@
-                                                                     
-                                                                     
-                                                                     
-                                             
-import java.awt.SystemColor;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+#pragma once
 
+#include <string>
+#include <vector>
+#include <list>
 
-public class HiddenMarkovModel {
+//STUB!
+class Random{
+public:
+	Random(int){}
+	double nextDouble();
+};
+
+class HiddenMarkovModel {
 	
-	public static boolean debug = true;
+public:
+	static bool debug;
 	
-	public static void main(String args[]) {
-		HiddenMarkovModel HMM = new HiddenMarkovModel();
+
+	static void main(std::string args[]) {
+		HiddenMarkovModel::debug = true;
+		HiddenMarkovModel HMM;
 		HMM.test();	
 	}
 	
 	/**
-	 * Tests the EM and Gibbs sampler for HMM.  If all works well, the EM should have strictly decreasing NLL and the Gibbs should be mostly decreasing to some stable point.
-	 */
-	public void test() {
-		Random generator = new Random(1);
+  * Tests the EM and Gibbs sampler for HMM.  If all works well, the EM should have strictly decreasing NLL and the Gibbs should be mostly decreasing to some stable point.
+  */
+    void test() {
+        Random generator(1);
 		
 		int numStates = 5;
-		double tranP[][] = new double[numStates][numStates];
+		std::vector<std::vector<double> > tranP(numStates);
+		for (auto i : tranP)
+			i.reserve(numStates);
 		
 		for (int i = 0; i < numStates; i++) {
 			for (int j = 0; j < numStates; j++) {
@@ -34,17 +42,17 @@ public class HiddenMarkovModel {
 			tranP[i] = vecNomalize(tranP[i]);
 		}
 		
-		double mu[] = new double[numStates];
+		double mu[numStates];
 		for (int i = 0; i < numStates; i++) {
 			mu[i] = generator.nextGaussian() * 5;
 		}
 		
-		double sigma[] = new double[numStates];
+		double sigma[numStates];
 		for (int i = 0; i < numStates; i++) {
 			sigma[i] = (generator.nextDouble() + 0.2) * 3;
 		}
 		
-		double initialP[] = new double[numStates];
+		double initialP[numStates];
 		for (int i = 0; i < numStates; i++) {
 			initialP[i] = generator.nextDouble();
 		}
@@ -57,30 +65,30 @@ public class HiddenMarkovModel {
 		inferEM(obsStates, numStates, 1000, 0.1);
 		inferEM(obsStates, numStates+10, 1000, 0.1);
 		System.out.println("Testing Gibbs");
-//		inferGibbs(obsStates, numStates, 1000, 0.1);
+		//		inferGibbs(obsStates, numStates, 1000, 0.1);
 
 	}
 	
 	/**
-	 * Generates random data from an HMM with gaussian emissions.
-	 * @param mus The means of the gaussian emissions.
-	 * @param sigmas The standard deviations of the gaussian emissions.
-	 * @param tranProb A matrix of transition probabilities
-	 * @param initialProb An array of probabilities for the initial state.
-	 * @param numStates The number of states
-	 * @param length The length of the sequence to generate.
-	 * @return The observed states from the generate HMM.
-	 */
-	public double[] genMarkovData(double[] mus, double[] sigmas, double[][] tranProb, double[] initialProb, int numStates, int length) {
-		int hiddenStates[] = new int[length];
+  * Generates random data from an HMM with gaussian emissions.
+  * @param mus The means of the gaussian emissions.
+  * @param sigmas The standard deviations of the gaussian emissions.
+  * @param tranProb A matrix of transition probabilities
+  * @param initialProb An array of probabilities for the initial state.
+  * @param numStates The number of states
+  * @param length The length of the sequence to generate.
+  * @return The observed states from the generate HMM.
+  */
+    std::vector<double> genMarkovData(std::vector<double> mus, std::vector<double> sigmas, std::vector<std::vector<double> > tranProb, double initialProb[], int numStates, int length) {
+        int hiddenStates[length];
 		hiddenStates[0] = randSample(initialProb);
 		for (int i = 1; i < length; i++) {
 			double tran[] = tranProb[hiddenStates[i-1]];
 			hiddenStates[i] = randSample(tran);
 		}
 		
-		Random generator = new Random();
-		double obsStates[] = new double[length];
+		Random generator;
+		double obsStates[length];
 		for (int i = 0; i < length; i++) {
 			obsStates[i] = (generator.nextGaussian()  + mus[hiddenStates[i]]) * sigmas[hiddenStates[i]];
 		}
@@ -89,11 +97,12 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Takes a random sample from a categorical distribution
-	 * @param probs An array of probabilities that sums to one where probs[i] = probability that i gets returned
-	 * @return A weighted random value from the distribution probs.
-	 */
-	private int randSample(double[] probs) {
+  * Takes a random sample from a categorical distribution
+  * @param probs An array of probabilities that sums to one where probs[i] = probability that i gets returned
+  * @return A weighted random value from the distribution probs.
+  */
+private:
+	int randSample(std::vector<double> probs) {
 		double rand = Math.random();
 		for (int i = 0; i < probs.length; i++) {
 			if (probs[i] > rand) return i;
@@ -103,27 +112,27 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Calculates an unnormalized normal pdf.
-	 * @param x Value to calculate probability of.
-	 * @param mu Mean of the gaussian.
-	 * @param sigma Standard deviation of the Gaussian.
-	 * @return Unnormalized probability of x from a gaussian with mean mu and standard deviation mu.
-	 */
-	private double normPdf(double x, double mu, double sigma) {
+  * Calculates an unnormalized normal pdf.
+  * @param x Value to calculate probability of.
+  * @param mu Mean of the gaussian.
+  * @param sigma Standard deviation of the Gaussian.
+  * @return Unnormalized probability of x from a gaussian with mean mu and standard deviation mu.
+  */
+    double normPdf(double x, double mu, double sigma) {
 		return Math.exp(-square((x - mu)/ sigma) / 2) / sigma / Math.sqrt(2*Math.PI);
 	}
 	
 	/**
-	 * Quickly calculates the square of double.
-	 */
-	private final double square(double x){
+  * Quickly calculates the square of double.
+  */
+    const double square(double x){
 		return x*x;
 	}
 	
 	/**
-	 * Calculates the L2 norm of a given vector.
-	 */
-	private final double norm(double[] x) {
+  * Calculates the L2 norm of a given vector.
+  */
+    const double norm(double x[]) {
 		double temp = 0;
 		for (int i = 0; i < x.length; i++) {
 			temp += x[i] * x[i];
@@ -132,9 +141,9 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Calculates the sum of a given vector.
-	 */
-	private final double sum(double[] x) {
+  * Calculates the sum of a given vector.
+  */
+    const double sum(double x[]) {
 		double temp = 0;
 		for (int i = 0; i < x.length; i++) {
 			temp += x[i] ;
@@ -143,11 +152,11 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Calculates the sum of a given vector.
-	 */
-	private final double[] vecNomalize(double[] x) {
+  * Calculates the sum of a given vector.
+  */
+    std::vector<double> vecNomalize(std::vector<double> x) {
 		double sum = sum(x);
-		double toReturn[] = new double[x.length];
+		double toReturn[x.length];
 		for (int i = 0; i < x.length; i++) {
 			toReturn[i] = x[i] / sum;
 		}
@@ -155,10 +164,10 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Divides all the elements of a given vector x, by a value divisor.
-	 */
-	private final double[] vecDivide(double[] x, double divisor) {
-		double toReturn[] = new double[x.length];
+  * Divides all the elements of a given vector x, by a value divisor.
+  */
+    std::vector<double> vecDivide(std::vector<double> x, double divisor) {
+        double toReturn[x.length];
 		for (int i = 0; i < x.length; i++) {
 			toReturn[i] = x[i] / divisor;
 		}
@@ -166,24 +175,28 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Uses a Gibbs Sampler to infer the states, transition, and emission probabilities for a HMM where the observations are assumed to come from a univariate gaussian distribution.
-	 * @param observed A vector of observed data assumed to be from a univariate normal distribution.
-	 * @param numStates The number of hidden states in the HMM.
-	 * @param maxIters Maximum number of times to iterate the EM algorithm
-	 * @param cutOff The required relative change in probability before stopping the algorithm.
-	 * @return
-	 */
-	public double[] inferGibbs(double[] observed, int numStates, int maxIters, double cutOff) {
-		Random generator = new Random();
+  * Uses a Gibbs Sampler to infer the states, transition, and emission probabilities for a HMM where the observations are assumed to come from a univariate gaussian distribution.
+  * @param observed A vector of observed data assumed to be from a univariate normal distribution.
+  * @param numStates The number of hidden states in the HMM.
+  * @param maxIters Maximum number of times to iterate the EM algorithm
+  * @param cutOff The required relative change in probability before stopping the algorithm.
+  * @return
+  */
+public:
+	std::vector<double> inferGibbs(std::vector<double> observed, int numStates, int maxIters, double cutOff) {
+		Random generator;
 
 		int length = observed.length;
 		
-		double[] mu = kmeans(observed, numStates);
-		double[] sigma = new double[numStates];
-		double[] pi = new double[numStates];
-		double[][] tran = new double[numStates][numStates];
+		std::vector<double> mu = kmeans(observed, numStates);
+		std::vector<double> sigma(numStates);
+		std::vector<double> pi(numStates);
+		std::vector<std::vector<double> > tran(numStates);
+		for (auto& i : tran){
+			i.reserve(numStates);
+		}
 		
-		int[] postStates = new int[length]; 
+		int postStates[length];
 		
 		// Randomly initializes the parameters.
 		for (int i = 0; i < numStates; i++) {
@@ -195,7 +208,7 @@ public class HiddenMarkovModel {
 			tran[i] = vecNomalize(tran[i]);
 		}
 		pi = vecNomalize(pi);
-		double postProb[][] = new double[0][0];
+		double postProb[0][0];
 		double prevProb = Double.MAX_VALUE;
 		double curProb = Double.MIN_NORMAL;
 		int curIter = 0;
@@ -203,9 +216,9 @@ public class HiddenMarkovModel {
 		while (curIter < maxIters && Math.abs(prevProb - curProb) > cutOff) {	
 			curIter++;
 			// Call the forwards backwards algorithm to get the posterior probability of the states and transitions.
-			Object[] fb = 
+			Object fb[] =
 					forwardsBackwards(observed, mu, sigma, tran, pi, numStates);
-			postProb = (double[][]) fb[0];
+			postProb = (std::vector<std::vector<double> >) fb[0];
 			
 			// Randomly sample hidden states.
 			for (int i = 0; i < length; i++) {
@@ -231,7 +244,7 @@ public class HiddenMarkovModel {
 			pi = vecNomalize(postProb[0]);			
 			
 			// Maximizes the mean parameter for the gaussian distributions.
-			double[] sums = new double[numStates];
+			std::vector<double> sums(numStates);
 			for (int i = 0; i < numStates; i++) {
 				mu[i] = 0;
 				sigma[i] = 0;
@@ -274,22 +287,25 @@ public class HiddenMarkovModel {
 	
 	
 	/**
-	 * Uses an EM algorithm to infer the states, transition, and emission probabilities for a HMM where the observations are assumed to come from a univariate gaussian distribution.
-	 * @param observed A vector of observed data assumed to be from a univariate normal distribution.
-	 * @param numStates The number of hidden states in the HMM.
-	 * @param maxIters Maximum number of times to iterate the EM algorithm
-	 * @param cutOff The required relative change in probability before stopping the algorithm.
-	 * @return
-	 */
-	public double[] inferEM(double[] observed, int numStates, int maxIters, double cutOff) {
-		Random generator = new Random();
+  * Uses an EM algorithm to infer the states, transition, and emission probabilities for a HMM where the observations are assumed to come from a univariate gaussian distribution.
+  * @param observed A vector of observed data assumed to be from a univariate normal distribution.
+  * @param numStates The number of hidden states in the HMM.
+  * @param maxIters Maximum number of times to iterate the EM algorithm
+  * @param cutOff The required relative change in probability before stopping the algorithm.
+  * @return
+  */
+    std::vector<double> inferEM(std::vector<double> observed, int numStates, int maxIters, double cutOff) {
+        Random generator;
 
 		int length = observed.length;
 		
-		double[] mu = kmeans(observed, numStates);
-		double[] sigma = new double[numStates];
-		double[] pi = new double[numStates];
-		double[][] tran = new double[numStates][numStates];
+		std::vector<double> mu = kmeans(observed, numStates);
+		std::vector<double> sigma(numStates);
+		std::vector<double> pi(numStates);
+		std::vector<std::vector<double> > tran(numStates);
+		for (auto* i : tran){
+			i.reserve(numStates);
+		}
 		
 		// Randomly initializes the parameters.
 		for (int i = 0; i < numStates; i++) {
@@ -301,7 +317,7 @@ public class HiddenMarkovModel {
 			tran[i] = vecNomalize(tran[i]);
 		}
 		pi = vecNomalize(pi);
-		double postProb[][] = new double[0][0];
+		double postProb[0][0];
 		
 		double prevProb = Double.MAX_VALUE;
 		double curProb = Double.MIN_NORMAL;
@@ -311,10 +327,10 @@ public class HiddenMarkovModel {
 			curIter++; 
 			
 			// Call the forwards backwards algorithm to get the posterior probability of the states and transitions.
-			Object[] fb = 
+			Object fb[] =
 					forwardsBackwards(observed, mu, sigma, tran, pi, numStates);
-			postProb = (double[][]) fb[0];
-			tran = (double[][]) fb[1];
+			postProb = (std::vector<std::vector<double> >) fb[0];
+			tran = (std::vector<std::vector<double> >) fb[1];
 
 			// Maximizes the initial probability vector
 			for (int curState = 0; curState < numStates; curState++) {
@@ -348,18 +364,18 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Calculates the negative log likelihood of the observed HMM data with the given parameters for a univariate gaussian emission.
-	 * @param observed An array of the observed data.
-	 * @param mu An array of the mean values of the emission gaussians.
-	 * @param tranProb A 2D array where tranProb[i][j] = probability of transitioning from state i to state j.
-	 * @param initialProb An array containing the initial probability of being in a given state
-	 * @param numStates The number of unique states in the Markov Model
-	 * @return The negative log likelihood of the data.
-	 */
-	public double dataProb(double[] observed, double[] mu, double[] sigma, double[][] tranProb, double[] initialProb, int numStates) {
+  * Calculates the negative log likelihood of the observed HMM data with the given parameters for a univariate gaussian emission.
+  * @param observed An array of the observed data.
+  * @param mu An array of the mean values of the emission gaussians.
+  * @param tranProb A 2D array where tranProb[i][j] = probability of transitioning from state i to state j.
+  * @param initialProb An array containing the initial probability of being in a given state
+  * @param numStates The number of unique states in the Markov Model
+  * @return The negative log likelihood of the data.
+  */
+    double dataProb(std::vector<double> observed, std::vector<double> mu, std::vector<double> sigma, std::vector<std::vector<double> > tranProb, std::vector<double> initialProb, int numStates) {
 		int length = observed.length;
-		double cumProb[][] = new double[length][numStates];
-		double scaling[] = new double[length];
+		double cumProb[length][numStates];
+		double scaling[length];
 		
 		double curObs = observed[0];
 		for (int state = 0; state < numStates; state++) {
@@ -383,22 +399,24 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Uses the forwards backwards algorithm to find the posterior state probabilities of a HMM with gaussian emissions
-	 * @param observed An array containing the observed data from the HMM
-	 * @param mus An array containing the mean values of the emissions gaussians.
-	 * @param sigmas An array containing the standard deviation of the emissions gaussians.
-	 * @param tranProb A 2D array where tranProb[i][j] = probability of transitioning from state i to state j.
-	 * @param initialProb An array containing the initial probability of being in a given state
-	 * @param numStates The number of unique states in the Markov Model
-	 * @return An object array where the first element is a 2D array where element [i][j]=probability that hidden state i is in state j
-	 * and the second element is a 2D matrix for the posterior probability of the transition matrix.
-	 */
-	public Object[] forwardsBackwards(double[] observed, double[] mus, double[] sigmas, double[][] tranProb, double[] initialProb, int numStates) {
+  * Uses the forwards backwards algorithm to find the posterior state probabilities of a HMM with gaussian emissions
+  * @param observed An array containing the observed data from the HMM
+  * @param mus An array containing the mean values of the emissions gaussians.
+  * @param sigmas An array containing the standard deviation of the emissions gaussians.
+  * @param tranProb A 2D array where tranProb[i][j] = probability of transitioning from state i to state j.
+  * @param initialProb An array containing the initial probability of being in a given state
+  * @param numStates The number of unique states in the Markov Model
+  * @return An object array where the first element is a 2D array where element [i][j]=probability that hidden state i is in state j
+  * and the second element is a 2D matrix for the posterior probability of the transition matrix.
+  */
+    Object[] forwardsBackwards(std::vector<double> observed, std::vector<double> mus, std::vector<double> sigmas, std::vector<std::vector<double> > tranProb, std::vector<double> initialProb, int numStates) {
 		int length = observed.length;
-		double scaling[] = new double[length];
+		double scaling[length];
 		
 		// PART 1: The forwards algorithm
-		double[][] alpha = new double[length][numStates];
+		std::vector<std::vector<double> > alpha(length);
+		for (auto& i : alpha)
+			i.reserve(numStates);
 		double curObs = observed[0];
 		
 		// Calculates the probabilities of the first state
@@ -428,7 +446,9 @@ public class HiddenMarkovModel {
 		}
 		
 		// PART 2: The backwards algorithm
-		double[][] beta = new double[length][numStates];
+		std::vector<std::vector<double> > beta(length);
+		for (auto& i : alpha)
+			i.reserve(numStates);
 		
 		// The last state always has probability 1 since there's no data after it
 		for (int finalState = 0; finalState < numStates; finalState++) {
@@ -451,7 +471,7 @@ public class HiddenMarkovModel {
 		}
 		
 		// PART 3: Calculates the posterior probability of being in a given state using forwards and backwards info.
-		double postProb[][] = new double[length][numStates];
+		double postProb[length][numStates];
 		for (int t = 0; t < length; t++) {
 			for (int curState = 0; curState < numStates; curState++) {
 				postProb[t][curState] = alpha[t][curState] * beta[t][curState];
@@ -461,7 +481,7 @@ public class HiddenMarkovModel {
 		
 		
 		// zeta(i, j) = prob of going from state i to j
-		double zeta[][] = new double[numStates][numStates];
+		double zeta[numStates][numStates];
 		for (int curState = 0; curState < numStates; curState++) {
 			for (int nextState = 0; nextState < numStates; nextState++) {
 				for (int t = 0; t < length - 1; t++) {
@@ -471,14 +491,15 @@ public class HiddenMarkovModel {
 			zeta[curState] = vecNomalize(zeta[curState]);
 		}
 		
-		Object toReturn[] = new Object[2];
+		Object toReturn[2];
 		toReturn[0] = postProb;
 		toReturn[1] = zeta;
-				
+
 		return toReturn;
 	}
 	
-	private int maxIndex(double[] x) {
+private:
+	int maxIndex(std::vector<double> x) {
 		double maxValue = x[0];
 		int maxIndex = 0;
 		for (int i = 1; i < x.length; i++) {
@@ -491,15 +512,15 @@ public class HiddenMarkovModel {
 	}
 	
 	/**
-	 * Uses the k-means algorithm to find k clusters in an array of data
-	 * @param data Array to find clusters in
-	 * @param k Number of clusters to find
-	 * @return An array with the centers of the k clusters.
-	 */
-	private double[] kmeans(double[] data, int k) {
-		double[] centers = new double[k];
-		List<Double>[] partedData = new LinkedList[k];
-		Random gen = new Random(1);
+  * Uses the k-means algorithm to find k clusters in an array of data
+  * @param data Array to find clusters in
+  * @param k Number of clusters to find
+  * @return An array with the centers of the k clusters.
+  */
+    std::vector<double> kmeans(std::vector<double> data, int k) {
+        std::vector<double> centers(k;
+        std::vector<std::list<double> > partedData;
+        Random gen(1);
 		
 		for (int i = 0; i < k; i++) {
 			centers[i] = data[gen.nextInt(data.length)];
@@ -507,9 +528,9 @@ public class HiddenMarkovModel {
 		
 		for (int iter = 0; iter < 10; iter++) {
 			// Reset clustered data
-			for (int i = 0; i < k; i ++) {
-				partedData[i] = new LinkedList<Double>();
-			}
+//			for (int i = 0; i < k; i ++) {
+//				partedData[i] = new LinkedList<Double>();
+//			}
 			
 			
 			// Assign each data to a cluster
@@ -537,7 +558,8 @@ public class HiddenMarkovModel {
 		return centers;		
 	}
 	
-	public void printVec(double[] x) {
+public:
+	void printVec(std::vector<double> x) {
 		for (int i = 0; i < x.length; i++) {
 			System.out.print(x[i] + " ");
 		}
