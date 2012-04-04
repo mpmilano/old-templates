@@ -11,7 +11,7 @@ namespace xlnagla{
 
 class assert_once_c{
 public:
-    static std::map<int, bool>& seen_map();
+    static std::map<std::string, std::map<int, bool> >& seen_map();
 
 };
 }
@@ -20,11 +20,11 @@ public:
     ([&](){\
     int static_rand = X; \
     auto& map = xlnagla::assert_once_c::seen_map(); \
-    if (map.count(static_rand) > 0 && map.at(static_rand)) \
+    if (map[__FILE__].count(static_rand) > 0 && map.at(__FILE__).at(static_rand)) \
     return true; \
     else { \
     assert(Y); \
-    map[static_rand] = true; \
+    map[__FILE__][static_rand] = true; \
     return true; \
     }; \
     }()))
