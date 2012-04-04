@@ -16,7 +16,7 @@ public:
 };
 }
 #define assert_once(Y) assert_once_int(Y, __LINE__)
-#define assert_once_int(Y, X) \
+#define assert_once_int(Y, X) assert (\
     ([&](){\
     int static_rand = X; \
     auto& map = xlnagla::assert_once_c::seen_map(); \
@@ -27,4 +27,4 @@ public:
     map[static_rand] = true; \
     return true; \
     }; \
-    }())
+    }()))

@@ -13,4 +13,6 @@ for (int i = 0; i < 10; ++i){
 assert_once(f());
 assert_once(f());
 }
+bool thisisjustatest=false;
+assert_once(thisisjustatest);
 }
