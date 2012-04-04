@@ -18,5 +18,7 @@ HiddenMarkovModel.h \
 oxthread.h
 
 SOURCES += \
-    main.cpp
+    main.cpp \
+    sources.cpp
+
 
