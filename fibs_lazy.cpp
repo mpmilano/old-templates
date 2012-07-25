@@ -1,33 +1,68 @@
-#include "Lazy.h"
+#include "Thunk.h"
 #include <iostream>
 
 
 template<typename T>
-class LazyList
+class ThunkList
 {
 
 public:
 
-	Lazy<T> elem;
-	Lazy<LazyList<T> > next;
+	Thunk<T> elem;
+	Thunk<ThunkList<T> > next;
 
-	LazyList(std::function<T* () > elem, std::function<LazyList<T>* () > next):elem(elem),next(next){}
-	static LazyList* make_list(std::function<T* () > elem, std::function<LazyList<T>* () > next){
- 		return new LazyList(elem, next);
+	ThunkList(std::function<T* () > elem, std::function<ThunkList<T>* () > next):elem(elem),next(next){}
+	static ThunkList* make_list(std::function<T* () > elem, std::function<ThunkList<T>* () > next){
+ 		return new ThunkList(elem, next);
 	}
 
 };
 
+class destroyInt{
 
-	int main(){
-		std::function<int* ()  > foo1 = [](){int* a = new int(12); return a;};
-		std::function<LazyList<int>* () > foo2 = [foo1, &foo2](){
-			
-			return LazyList<int>::make_list([&](){return new int(*(foo1()) + 1);}, foo2);
-		};
-		LazyList<int> test(foo1, foo2);
-		while(true){
-			std::cout << *test.elem << std::endl;
-			test = std::move(*test.next);
-		}
+
+public:
+	destroyInt(int i):value(i){}
+	const int value;
+
+	int operator+(int i ){return i + value;}
+
+	~destroyInt(){
+		std::cout << "destroy " << value << std::endl;
 	}
+};
+
+std::function<ThunkList<destroyInt>* () > thunk_helper(std::function<destroyInt* () > f){
+
+
+	std::function<destroyInt* ()> f2 = [f](){
+		return new destroyInt(*(f())+ 2);
+	};
+
+
+	std::function<ThunkList<destroyInt>* ()> arg2 = [f2 ]()
+		{
+			return thunk_helper(f2)();
+		};
+	std::function<destroyInt* () > arg1 = [f](){return new destroyInt(*(f()) + 1);};
+
+	std::function<ThunkList<destroyInt>* ()> ret = [arg1, arg2](){
+		return ThunkList<destroyInt>::make_list(arg1 ,arg2 );
+	};
+
+	return ret;
+}
+
+
+int main(){
+	std::function<destroyInt* ()  > foo1 = [](){destroyInt* a = new destroyInt(12); return a;};
+
+	
+	std::function<ThunkList<destroyInt>* () > next = [foo1](){return thunk_helper(foo1)();};
+	ThunkList<destroyInt> test(foo1, next);
+	while(true){
+		std::cout << test.elem->value << std::endl;
+		test = std::move(*test.next);
+	}
+}
+
