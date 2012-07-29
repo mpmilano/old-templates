@@ -28,8 +28,10 @@ Thunk(std::function<T* ()> t):f(t),evaluated(false){}
 Thunk& operator= (Thunk&& _Right){
 	if (_Right.evaluated)
 		t = std::move(_Right.t);
-	else
+	else{
 		f = std::move(_Right.f);
+		t.reset();
+	}
 	evaluated = _Right.evaluated;
 	return (*this);
 }
@@ -37,8 +39,10 @@ template<class Type2, class Del2>
 Thunk& operator= (Thunk<Type2, Del2>&& _Right){
 	if (_Right.evaluated)
 		t = std::move(_Right.t);
-	else
+	else{
 		f = std::move(_Right.f);
+		t.reset();
+	}
 	evaluated = _Right.evaluated;
 	return (*this);
 }
