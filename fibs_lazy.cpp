@@ -1,6 +1,7 @@
 #include "thunk"
 #include <iostream>
 
+using namespace xlnagla;
 
 template<typename T>
 class unique_thunkList
