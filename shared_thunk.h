@@ -1,58 +1,65 @@
 #include <functional>
 #include <memory>
+#include <cassert>
 
 template<class T, class Del = std::default_delete<T> >
-class Thunk{
+class shared_thunk{
 private:
 std::function<T* ()> f;
-std::unique_ptr<T, Del> t;
-bool evaluated;
+std::shared_ptr<T> t;
+
+bool evaluated() const{
+	return t.get() != nullptr;
+}
+
+
 public:
-Thunk(std::function<T* ()> t):f(t),evaluated(false){}
+
+shared_thunk(std::function<T* ()> f):f(f),t(nullptr)
+{
+	assert(!evaluated() ? t.get() == nullptr : true);
+}
 	const T& value() const 	{
-		//logically const - as far as the semantics are concerned, this is just a wrapper to unique_ptr.
-		Thunk<T>* l = const_cast<Thunk<T>*>(this);
-		if (!l->evaluated) {
-			l->t = std::unique_ptr<T>(std::move(l->f()));
+		//logically const - as far as the semantics are concerned, this is just a wrapper to shared_ptr.
+		shared_thunk<T>* l = const_cast<shared_thunk<T>*>(this);
+		assert(!evaluated() ? t.get() == nullptr : true);
+		if (!l->evaluated()) {
+			l->t = std::shared_ptr<T>(std::move(l->f()));
 		} 
-		l->evaluated = true; 
 		return *t;
 	}
 
 	T& value() 	{
-		if (!evaluated) 
-			t = std::unique_ptr<T>(std::move(f())); 
-		evaluated = true; 
+		assert(!evaluated() ? t.get() == nullptr : true);
+
+		if (!evaluated()) 
+			t = std::shared_ptr<T>(std::move(f())); 
 		return *t;
 	}
-Thunk& operator= (Thunk&& _Right){
-	if (_Right.evaluated)
+shared_thunk& operator= (shared_thunk&& _Right){
+	if (_Right.evaluated()){
 		t = std::move(_Right.t);
+	}
 	else{
 		f = std::move(_Right.f);
 		t.reset();
 	}
-	evaluated = _Right.evaluated;
 	return (*this);
 }
 template<class Type2, class Del2>
-Thunk& operator= (Thunk<Type2, Del2>&& _Right){
-	if (_Right.evaluated)
+shared_thunk& operator= (shared_thunk<Type2, Del2>&& _Right){
+	if (_Right.evaluated())
 		t = std::move(_Right.t);
 	else{
 		f = std::move(_Right.f);
 		t.reset();
 	}
-	evaluated = _Right.evaluated;
 	return (*this);
 }
-void swap(Thunk& _Right){
+void swap(shared_thunk& _Right){
 	auto&& tmpf = f;
 	f = _Right.f;
 	_Right.f = tmpf;
-	auto tmpbool = evaluated;
-	evaluated = _Right.evaluated;
-	_Right.evaluated = tmpbool;
 	t.swap(_Right.t);
 }
 T* release(){
@@ -86,7 +93,15 @@ explicit operator bool () const{
 	return [](bool b){return b;}(t);
 }
 
-Thunk(const Thunk& ) = delete;
-Thunk& operator=(const Thunk& ) = delete;
+shared_thunk(const shared_thunk& thunk)
+:f(thunk.f),t(thunk.t)
+{}
+shared_thunk& operator=(const shared_thunk& thunk)
+{
+	f = thunk.f;
+	t = thunk.t;
+	}
+
+
 
 };
