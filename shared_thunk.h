@@ -1,15 +1,19 @@
 #pragma once
 
+#include <cassert>
 #include <functional>
 #include <memory>
-#include <cassert>
+#include <thread>
+#include <future>
 
 namespace xlnagla{
 
-template<class T, class Del = std::default_delete<T> >
+template<class T, std::launch lnch = std::launch::sync, class Del = std::default_delete<T> >
 class shared_thunk{
 private:
-std::function<T* ()> f;
+
+std::future<T*> f;
+//std::function<T* ()> f;
 std::shared_ptr<T> t;
 
 bool evaluated() const{
@@ -19,7 +23,7 @@ bool evaluated() const{
 
 public:
 
-shared_thunk(std::function<T* ()> f):f(f),t(nullptr)
+shared_thunk(std::function<T* ()> f):f(std::async(lnch,f)),t(nullptr)
 {
 	assert(!evaluated() ? t.get() == nullptr : true);
 }
@@ -28,7 +32,7 @@ shared_thunk(std::function<T* ()> f):f(f),t(nullptr)
 		shared_thunk<T>* l = const_cast<shared_thunk<T>*>(this);
 		assert(!evaluated() ? t.get() == nullptr : true);
 		if (!l->evaluated()) {
-			l->t = std::shared_ptr<T>(std::move(l->f()));
+			l->t = std::shared_ptr<T>(std::move(l->f.get()));
 		} 
 		return *t;
 	}
@@ -37,7 +41,7 @@ shared_thunk(std::function<T* ()> f):f(f),t(nullptr)
 		assert(!evaluated() ? t.get() == nullptr : true);
 
 		if (!evaluated()) 
-			t = std::shared_ptr<T>(std::move(f())); 
+			t = std::shared_ptr<T>(std::move(f.get())); 
 		return *t;
 	}
 shared_thunk& operator= (shared_thunk&& _Right){
@@ -50,8 +54,8 @@ shared_thunk& operator= (shared_thunk&& _Right){
 	}
 	return (*this);
 }
-template<class Type2, class Del2>
-shared_thunk& operator= (shared_thunk<Type2, Del2>&& _Right){
+template<class Type2, std::launch lnch2, class Del2>
+shared_thunk& operator= (shared_thunk<Type2, lnch2, Del2>&& _Right){
 	if (_Right.evaluated())
 		t = std::move(_Right.t);
 	else{
