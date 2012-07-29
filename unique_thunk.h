@@ -19,7 +19,7 @@ public:
 
 const T& value() const 	{
 	//logically const - as far as the semantics are concerned, this is just a wrapper to unique_ptr.
-	unique_thunk<T>* l = const_cast<unique_thunk<T>*>(this);
+	unique_thunk<T, lnch, Del>* l = const_cast<unique_thunk<T, lnch, Del>*>(this);
 	if (!l->evaluated) {
 		l->t = std::unique_ptr<T>(std::move(l->f.get()));
 	} 

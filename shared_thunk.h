@@ -29,7 +29,7 @@ shared_thunk(std::function<T* ()> f):f(std::async(lnch,f)),t(nullptr)
 }
 	const T& value() const 	{
 		//logically const - as far as the semantics are concerned, this is just a wrapper to shared_ptr.
-		shared_thunk<T>* l = const_cast<shared_thunk<T>*>(this);
+		shared_thunk<T, lnch, Del>* l = const_cast<shared_thunk<T, lnch, Del>*>(this);
 		assert(!evaluated() ? t.get() == nullptr : true);
 		if (!l->evaluated()) {
 			l->t = std::shared_ptr<T>(std::move(l->f.get()));
