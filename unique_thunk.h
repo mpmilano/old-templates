@@ -3,6 +3,8 @@
 #include <functional>
 #include <memory>
 
+namespace xlnagla{
+
 template<class T, class Del = std::default_delete<T> >
 class unique_thunk{
 private:
@@ -92,3 +94,5 @@ unique_thunk(const unique_thunk& ) = delete;
 unique_thunk& operator=(const unique_thunk& ) = delete;
 
 };
+
+}

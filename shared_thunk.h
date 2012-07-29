@@ -4,6 +4,8 @@
 #include <memory>
 #include <cassert>
 
+namespace xlnagla{
+
 template<class T, class Del = std::default_delete<T> >
 class shared_thunk{
 private:
@@ -107,3 +109,5 @@ shared_thunk& operator=(const shared_thunk& thunk)
 
 
 };
+
+}
