@@ -6,13 +6,13 @@ namespace xlnagla{
 
 //the base case is the first argument.
 	template<typename T>
-		T cond(const T& basecase, bool acond, const T& res){
+		T cond(bool acond, const T& res, const T& basecase){
 		return acond ? res : basecase;
 	}
 	
 	template<typename T, typename... L>
-		T cond(const T& basecase, bool acond, const T& res, const L&... l){
-		return acond ? res : cond(basecase, l...);
+		T cond(bool acond, const T& res, const L&... l){
+		return acond ? res : cond(l...);
 	}
 
 	
