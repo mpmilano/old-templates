@@ -1,18 +1,16 @@
-#include "oxthread.h"
+#include "xlnagla_functional"
 #include "assert_once.h"
 #include <iostream>
+#include <string>
 
 int main(int, char**){
 
     using namespace std;
+	using namespace xlnagla;
 
-    string print = "foo";
-    auto f = [&](){std::cout << print << std::endl; return true;};
+	string a = "a";
+	string b = "b";
+	string c = "c";
 
-for (int i = 0; i < 10; ++i){
-assert_once(f());
-assert_once(f());
-}
-bool thisisjustatest=false;
-assert_once(thisisjustatest);
+	cout << cond(c, false, a, true, b) << endl;
 }
