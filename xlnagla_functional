@@ -29,23 +29,26 @@ namespace xlnagla{
 		return *acond ? res : lazy_cond(l...);
 	}
 
-	template<typename R, typename A, typename B>
-		inline const std::function< std::function<R (B)> (A) > curry(std::function<R (A, B)> f){
+	template<typename R, typename A, typename... B>
+		inline const std::function< std::function<R (B...)> (A) > curry(std::function<R (A, B...)> f){
 		return [f](A a){
-			return [a, f](B b){
-				return f(a,b);
+			return [a, f](B... b){
+				return f(a, b...);
 			};
 		};
 	}
 
+//because irritatingly enough trying to pass a lambda to something that expects a 
+//function of the same type will not work.  grr.  This only works on functions 
+//of no arguments.
 #define CONVERT_TO_STD_FUNCTION(lambda) [&](){\
 		auto f = std::move(lambda);\
 		typedef decltype(f) f_type;\
-		std::result_of<f_type()>::type v;\
 		typedef std::result_of<f_type()>::type rettype;	\
 		std::function<rettype () > retf = std::move(f);	\
-		return std::move(retf);\
+		return std::move(retf);						\
 	}()
+
 
 	
 
