@@ -1,18 +1,31 @@
 #pragma once
 
 #include <tuple>
+#include "thunk"
 
 namespace xlnagla{
 
+
+//this is better as a macro
 //the base case is the first argument.
 	template<typename T>
-		T cond(bool acond, const T& res, const T& basecase){
+		inline const T& cond(bool acond, const T& res, const T& basecase){
 		return acond ? res : basecase;
 	}
 	
 	template<typename T, typename... L>
-		T cond(bool acond, const T& res, const L&... l){
+		inline const T& cond(bool acond, const T& res, const L&... l){
 		return acond ? res : cond(l...);
+	}
+
+	template<typename T, typename B>
+		inline const T&	lazy_cond(const B &acond, const T &res, const T& basecase){
+		return *acond ? res : basecase;
+	}
+
+	template<typename T, typename B, typename... L>
+		inline const T& lazy_cond(const B& acond, const T& res, const L&... l){
+		return *acond ? res : lazy_cond(l...);
 	}
 
 	
