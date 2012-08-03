@@ -1,7 +1,8 @@
 #pragma once
 
 #include <tuple>
-#include "thunk"
+
+#include "memoize.h"
 
 namespace xlnagla{
 
@@ -28,6 +29,41 @@ namespace xlnagla{
 		return *acond ? res : lazy_cond(l...);
 	}
 
+	template<typename R, typename A, typename B>
+		inline const std::function< std::function<R (B)> (A) > curry(std::function<R (A, B)> f){
+		return [f](A a){
+			return [a, f](B b){
+				return f(a,b);
+			};
+		};
+	}
+
+#define CONVERT_TO_STD_FUNCTION(lambda) [&](){\
+		auto f = std::move(lambda);\
+		typedef decltype(f) f_type;\
+		std::result_of<f_type()>::type v;\
+		typedef std::result_of<f_type()>::type rettype;	\
+		std::function<rettype () > retf = std::move(f);	\
+		return std::move(retf);\
+	}()
+
 	
+
+	/*
+currying: T f(a,b) -> T f(a)(b)
+
+that means it's implemented something like this:
+
+std::function< std::function<T (b) > (a) >curry( function<T (a,b)> f){
+
+//close over f, takes an a
+return [f](a){
+  return [a,f](b){
+    return f(a,b);
+}
+}
+
+}
+	 */
 
 }

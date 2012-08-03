@@ -1,4 +1,5 @@
 #include "xlnagla_functional"
+#include "thunk"
 #include "assert_once.h"
 #include <iostream>
 #include <string>
@@ -28,6 +29,9 @@ int main(int argc, char**){
 
 	auto macrod = UNIQUE_THUNK(new string("a"));
 
+
+	cout << *macrod << endl;
+
 	constexpr auto constest = 3;
 
 	auto unique1 = unique_ptr<string>(new string(a));
@@ -42,5 +46,13 @@ int main(int argc, char**){
 		c) << endl;
 
 	cout << cond(abool, a, bbool, b, c ) << endl;
+
+	std::function<int (int, int)> testcurry = [](int a, int b){ return a + b;};
+
+	auto curried = curry(testcurry);
+
+	
+
+	std::cout << curried(1)(2) << std::endl;
 	
 }

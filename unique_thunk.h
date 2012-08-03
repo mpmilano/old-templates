@@ -4,6 +4,7 @@
 #include <memory>
 #include <thread>
 #include <future>
+#include "xlnagla_functional"
 
 namespace xlnagla{
 
@@ -119,14 +120,10 @@ unique_thunk& operator=(const unique_thunk& ) = delete;
 		return std::move(unique_thunk<T, lnch, Del>(t));
 	}
 
-	#define UNIQUE_THUNK(Tstar) [&](){\
-			auto f = [&]() { return Tstar; };\
-			typedef decltype(f) f_type;\
-			std::result_of<f_type()>::type v;\
-			typedef std::result_of<f_type()>::type rettype;\
-			std::function<rettype () > retf = f;\
-			return make_unique_thunk(retf);\
-		}();
+#define UNIQUE_THUNK(Tstar) [&](){				\
+		auto f = CONVERT_TO_STD_FUNCTION([&]() { return Tstar; });	\
+		return make_unique_thunk(f);						\
+	}()
 
 
 
