@@ -3,7 +3,7 @@
 #include "assert_once.h"
 #include <iostream>
 #include <string>
-
+#include "memoize.h"
 
 
 
@@ -27,7 +27,21 @@ int main(int argc, char**){
 
 	cout << *macrod << endl;
 
+	std::function<int (int)> fibs = [&](int a){
+		if (a > 1)
+			return fibs(a - 1 ) + fibs (a - 2);
+		else if (a == 1)
+			return 1;
+		else if (a == 0)
+			return 0;
+		else
+			throw "AAAAAA";
+		return -1;
+	};
 
+	fibs = memoize(fibs);
+
+	cout << fibs(30) << endl;
 
 	auto unique1 = unique_ptr<string>(new string(a));
 	auto unique2 = std::move(unique1);
