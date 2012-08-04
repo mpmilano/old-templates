@@ -41,6 +41,14 @@ int main(int argc, char**){
 
 	fibs = memoize(fibs);
 
+	std::function<int ()> three = [](){return 3;};
+	auto thunktest = make_thunk(three);
+
+	auto thunkmacrotest = THUNK("foo");
+
+	cout << "thunk test " << thunktest << endl;
+	cout << thunkmacrotest << endl;
+
 	cout << fibs(30) << endl;
 
 	auto unique1 = unique_ptr<string>(new string(a));

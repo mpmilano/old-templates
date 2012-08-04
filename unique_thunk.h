@@ -9,7 +9,7 @@
 namespace xlnagla{
 
 
-	template<class T, std::launch lnch = std::launch::sync, class Del = std::default_delete<T> >
+	template<class T, std::launch lnch = std::launch::any, class Del = std::default_delete<T> >
 		class unique_thunk{
 	private:
 	std::future<T*> f;
