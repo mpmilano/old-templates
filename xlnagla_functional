@@ -67,7 +67,16 @@ namespace xlnagla{
 		std::transform(list.begin(), list.end(),std::back_inserter(ret), f);
 		return std::move(ret);
 	}
-		
+
+	template<typename T, typename L>
+		T foldl(std::function<T (T, T) > f, const L& list, T t = T()){
+		return std::accumulate(std::begin(list), std::end(list), t, f);
+	}
+	template<typename T>
+		T foldl(std::function<T (T, T) > f, const std::initializer_list<T>& list, T t = T()){
+		return std::accumulate(std::begin(list), std::end(list), t, f);
+	}
+
 
 	/*
 currying: T f(a,b) -> T f(a)(b)

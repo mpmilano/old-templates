@@ -51,6 +51,14 @@ int main(int argc, char**){
 
 	cout << fibs(30) << endl;
 
+	int anint = int();
+	
+	cout << "foo foo " << anint << endl;
+
+	std::function<int (int, int) > fadd = [](int a, int b){return a+b;};
+
+	cout << xlnagla::foldl(fadd, {1,2,3,4, 5}) << endl;
+
 	auto unique1 = unique_ptr<string>(new string(a));
 	auto unique2 = std::move(unique1);
 
