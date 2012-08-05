@@ -64,6 +64,11 @@ int main(int argc, char**){
 
 	cout << cond(abool, a, bbool, b, c ) << endl;
 
+	std::function<int (int)> times2 = [](int i){return i*2;};
+
+	for (auto foo : xlnagla::map(times2,{1,2,3,4}) )
+		cout << foo << endl;
+
 	std::function<int (int, int)> testcurry = [](int a, int b){ return a + b;};
 	auto curried = curry(testcurry);
 	std::cout << curried(1)(2) << std::endl;
