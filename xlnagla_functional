@@ -57,14 +57,14 @@ namespace xlnagla{
 	template<typename T, typename A, typename L>
 		std::list<T> map(std::function<T (A)> f, const L& list){
 		std::list<T> ret;
-		std::transform(list.begin(), list.end(),std::back_inserter(ret), f);
+		std::transform(std::begin(list), std::end(list),std::back_inserter(ret), f);
 		return std::move(ret);
 	}
 
 	template<typename T, typename A>
 		std::list<T> map(std::function<T (A)> f, const std::initializer_list<A>& list){
 		std::list<T> ret;
-		std::transform(list.begin(), list.end(),std::back_inserter(ret), f);
+		std::transform(std::begin(list), std::end(list),std::back_inserter(ret), f);
 		return std::move(ret);
 	}
 
