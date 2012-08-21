@@ -121,7 +121,7 @@ unique_thunk& operator=(const unique_thunk& ) = delete;
 	}
 
 #define UNIQUE_THUNK(Tstar) [&](){				\
-		auto f = CONVERT_TO_STD_FUNCTION([&]() { return Tstar; });	\
+		auto f = CONVERT_TO_STATEMENT([&]() { return Tstar; });	\
 		return make_unique_thunk(f);						\
 	}()
 
