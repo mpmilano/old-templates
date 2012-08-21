@@ -11,6 +11,25 @@
 namespace xlnagla{
 
 
+	template<typename F, typename Ret, typename A, typename... Rest>
+		A helper(Ret (F::*)(A, Rest...)){
+		A a;
+		return a;
+	}
+	
+	template<typename F, typename Ret, typename A, typename... Rest>
+		A helper(Ret (F::*)(A, Rest...) const){
+		A a;
+		return a;
+	}
+	
+	template<typename F>
+		struct first_argument {
+			typedef decltype( helper(&F::operator()) ) type;
+			typedef F ftype;
+		};
+	
+
 //this is better as a macro
 //the base case is the first argument.
 	template<typename T>
