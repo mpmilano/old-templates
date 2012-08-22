@@ -136,7 +136,6 @@ Hopefully I can find something analagous that can happen at compile time.
 		inline const std::function< std::function<typename convert_2_helper<T>::rettype (typename convert_2_helper<T>::arg2type)> (typename convert_2_helper<T>::argtype) > curry2(T t){
 		return curry(convert_to_2arg_function(t));
 	}
-#define CURRY(lambda) curry(convert_to_2arg_function(lambda))
 
 
 	template<typename T, typename A, typename L>
