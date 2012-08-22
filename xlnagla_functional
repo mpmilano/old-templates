@@ -59,6 +59,71 @@ namespace xlnagla{
 		return *acond ? res : lazy_cond(l...);
 	}
 
+
+//because irritatingly enough trying to pass a lambda to something that expects a 
+//function of the same type will not work.  grr.  This only works on functions 
+//of no arguments.
+template<typename T>
+	struct statement_helper{
+		typedef T f_type;
+		typedef typename std::result_of<f_type()>::type rettype;
+		typedef typename std::function<rettype () >  ftype;
+	};
+template<typename T>
+	constexpr typename statement_helper<T>::ftype convert_to_statement(T f){
+	typename statement_helper<T>::ftype retf = std::move(f);
+	return std::move(retf);
+	
+}
+
+
+template<typename T>
+	struct convert_helper{
+		typedef T f_type;
+		typedef typename xlnagla::first_argument<T>::type argtype;
+		typedef typename std::result_of<f_type(argtype)>::type rettype;
+		typedef typename std::function<rettype (argtype) >  ftype;
+	};
+template<typename T>
+	constexpr typename convert_helper<T>::ftype convert_to_function(T f){
+	typename convert_helper<T>::ftype retf = std::move(f);
+	return std::move(retf);
+	
+}
+
+template<typename T>
+	struct convert_2_helper{
+		typedef T f_type;
+		typedef typename xlnagla::first_argument<T>::type argtype;
+		typedef typename xlnagla::second_argument<T>::type arg2type;
+		typedef typename std::result_of<f_type(argtype, arg2type)>::type rettype;
+		typedef typename std::function<rettype (argtype, arg2type) >  ftype;
+	};
+template<typename T>
+	constexpr typename convert_2_helper<T>::ftype convert_to_2arg_function(T f){
+	typename convert_2_helper<T>::ftype retf = std::move(f);
+	return std::move(retf);
+	
+}
+
+/*
+
+concept for convert_to_function: define a boolean function exists<int>(type) that returns true iff the function has that many arguments.  recursive structure:
+
+struct recursive_struct{
+   typedef T argument
+   bool argument_exists;
+   recursive_struct other_arguments;
+   int level;
+
+};
+
+so the structure will contain the type of the argument, a valid bit, which argument this is, and a pointer to the next argument.
+
+Hopefully I can find something analagous that can happen at compile time.
+
+ */
+
 	template<typename R, typename A, typename... B>
 		inline const std::function< std::function<R (B...)> (A) > curry(std::function<R (A, B...)> f){
 		return [f](A a){
@@ -67,36 +132,11 @@ namespace xlnagla{
 			};
 		};
 	}
-
-//because irritatingly enough trying to pass a lambda to something that expects a 
-//function of the same type will not work.  grr.  This only works on functions 
-//of no arguments.
-#define CONVERT_TO_STATEMENT(lambda) [&](){\
-		auto f = std::move(lambda);\
-		typedef decltype(f) f_type;\
-		typedef std::result_of<f_type()>::type rettype;	\
-		std::function<rettype () > retf = std::move(f);	\
-		return std::move(retf);						\
-	}()
-
-#define CONVERT_TO_FUNCTION(lambda) [&](){\
-		auto f = std::move(lambda);\
-		typedef decltype(f) f_type;\
-		typedef xlnagla::first_argument<decltype(f)>::type argtype; \
-		typedef std::result_of<f_type(argtype)>::type rettype;	\
-		std::function<rettype (argtype) > retf = std::move(f);	\
-		return std::move(retf);						\
-	}()
-
-#define CONVERT_TO_2ARG_FUNCTION(lambda) [&](){\
-		auto f = std::move(lambda);\
-		typedef decltype(f) f_type;\
-		typedef xlnagla::first_argument<decltype(f)>::type argtype; \
-		typedef xlnagla::second_argument<decltype(f)>::type arg2type; \
-		typedef std::result_of<f_type(argtype, arg2type)>::type rettype;		  \
-		std::function<rettype (argtype, arg2type) > retf = std::move(f);			\
-		return std::move(retf);						\
-	}()
+	template<typename T>
+		inline const std::function< std::function<typename convert_2_helper<T>::rettype (typename convert_2_helper<T>::arg2type)> (typename convert_2_helper<T>::argtype) > curry2(T t){
+		return curry(convert_to_2arg_function(t));
+	}
+#define CURRY(lambda) curry(convert_to_2arg_function(lambda))
 
 
 	template<typename T, typename A, typename L>

@@ -26,7 +26,7 @@ template<class T, std::launch lnch = std::launch::sync >
 
 
 #define THUNK(Tstar) [&](){				\
-		auto f = CONVERT_TO_STATEMENT([&]() { return std::move(Tstar); }); \
+		auto f = convert_to_statement([&]() { return std::move(Tstar); }); \
 		return make_thunk(f);						\
 	}()
 

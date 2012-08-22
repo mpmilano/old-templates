@@ -77,15 +77,15 @@ int main(int argc, char**){
 	for (auto foo : xlnagla::map(times2,{1,2,3,4}) )
 		cout << foo << endl;
 
-	std::function<int (int, int)> testcurry = [](int a, int b){ return a + b;};
-	auto curried = curry(testcurry);
+	auto curried = curry2([](int a, int b){ return a + b;});
 	std::cout << curried(1)(2) << std::endl;
 
 	std::function<int (int, int, int) > othercurry = [](int a, int b, int c){return a + b + c;};
 	std::cout << curry(curry(othercurry)(1))(2)(3) << endl;
 
-	auto convert_to_function = CONVERT_TO_FUNCTION([&](int i){return i;});
 
-	auto convert_to_2arg_function = CONVERT_TO_2ARG_FUNCTION([&](int i, double j){return std::string("foo");});
+	auto convert_to_function_non_macro_test = convert_to_function([&](int i){return i;});
+
+	auto convert_to_2arg_function_test = convert_to_2arg_function([&](int i, double j){return std::string("foo");});
 
 }
