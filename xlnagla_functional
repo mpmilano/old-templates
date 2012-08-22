@@ -12,29 +12,29 @@ namespace xlnagla{
 
 
 	template<typename F, typename Ret, typename A, typename... Rest>
-		A helper(Ret (F::*)(A, Rest...)){
-		A a;
-		return a;
-	}
+		A helper(Ret (F::*)(A, Rest...));
 	
 	template<typename F, typename Ret, typename A, typename... Rest>
-		A helper(Ret (F::*)(A, Rest...) const){
-		A a;
-		return a;
-	}
+		A helper(Ret (F::*)(A, Rest...) const);
 
 	template<typename F, typename Ret, typename A, typename B, typename... Rest>
-		B second_argument_helper(Ret (F::*)(A, B, Rest...) const){
-		B b;
-		return b;
-	}
+		B second_argument_helper(Ret (F::*)(A, B, Rest...));
+
+	template<typename F, typename Ret, typename A, typename B, typename... Rest>
+		B second_argument_helper(Ret (F::*)(A, B, Rest...) const);
 
 	
 	template<typename F>
 		struct first_argument {
 			typedef decltype( helper(&F::operator()) ) type;
-			typedef F ftype;
 		};
+
+	template<typename F>
+		struct second_argument {
+			typedef decltype( second_argument_helper(&F::operator()) ) type;
+		};
+
+	
 	
 
 //this is better as a macro
@@ -85,6 +85,16 @@ namespace xlnagla{
 		typedef xlnagla::first_argument<decltype(f)>::type argtype; \
 		typedef std::result_of<f_type(argtype)>::type rettype;	\
 		std::function<rettype (argtype) > retf = std::move(f);	\
+		return std::move(retf);						\
+	}()
+
+#define CONVERT_TO_2ARG_FUNCTION(lambda) [&](){\
+		auto f = std::move(lambda);\
+		typedef decltype(f) f_type;\
+		typedef xlnagla::first_argument<decltype(f)>::type argtype; \
+		typedef xlnagla::second_argument<decltype(f)>::type arg2type; \
+		typedef std::result_of<f_type(argtype, arg2type)>::type rettype;		  \
+		std::function<rettype (argtype, arg2type) > retf = std::move(f);			\
 		return std::move(retf);						\
 	}()
 

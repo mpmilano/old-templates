@@ -86,4 +86,6 @@ int main(int argc, char**){
 
 	auto convert_to_function = CONVERT_TO_FUNCTION([&](int i){return i;});
 
+	auto convert_to_2arg_function = CONVERT_TO_2ARG_FUNCTION([&](int i, int j){return i + j;});
+
 }
