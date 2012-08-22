@@ -75,8 +75,9 @@ namespace xlnagla{
 #define CONVERT_TO_FUNCTION(lambda) [&](){\
 		auto f = std::move(lambda);\
 		typedef decltype(f) f_type;\
-		typedef std::result_of<f_type()>::type rettype;	\
-		std::function<rettype (rettype) > retf = std::move(f);	\
+		typedef xlnagla::first_argument<decltype(f)>::type argtype; \
+		typedef std::result_of<f_type(argtype)>::type rettype;	\
+		std::function<rettype (argtype) > retf = std::move(f);	\
 		return std::move(retf);						\
 	}()
 

@@ -84,4 +84,6 @@ int main(int argc, char**){
 	std::function<int (int, int, int) > othercurry = [](int a, int b, int c){return a + b + c;};
 	std::cout << curry(curry(othercurry)(1))(2)(3) << endl;
 
+	auto convert_to_function = CONVERT_TO_FUNCTION([&](int i){return i;});
+
 }
