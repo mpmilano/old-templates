@@ -83,7 +83,6 @@ int main(int, char**){
 
 	cout << cond(abool, a, bbool, b, c ) << endl;  
 	std::function<int (int)> times2 = [](int i){return i*2;};
-    assert (has_n_arguments(times2, 1));
 
 	for (auto foo : xlnagla::map(times2,{1,2,3,4}) )
 		cout << foo << endl;
@@ -97,8 +96,8 @@ int main(int, char**){
 	std::cout << curry(curry(othercurry)(1))(2)(3) << endl;
 
 
-	auto convert_to_function_non_macro_test = convert_to_function([&](int i){return i;});
+    auto convert_to_function_non_macro_test = convert_to_function([&](int i){return i;});
 
-    auto convert_to_2arg_function_test = convert_to_2arg_function([&](int, double){return std::string("foo");});
+    auto convert_to_2arg_function_test = convert_to_function([&](int, double){return std::string("foo");});
 
 }

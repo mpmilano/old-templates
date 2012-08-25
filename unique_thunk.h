@@ -121,7 +121,7 @@ unique_thunk& operator=(const unique_thunk& ) = delete;
 	}
 
 #define UNIQUE_THUNK(Tstar) [&](){				\
-		auto f = convert_to_statement([&]() { return Tstar; });	\
+        auto f = xlnagla::convert_to_function([&]() { return Tstar; });	\
 		return make_unique_thunk(f);						\
 	}()
 

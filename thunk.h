@@ -26,7 +26,7 @@ template<class T, std::launch lnch = std::launch::deferred >
 
 
 #define THUNK(Tstar) [&](){				\
-		auto f = convert_to_statement([&]() { return std::move(Tstar); }); \
+        auto f = xlnagla::convert_to_function([&]() { return std::move(Tstar); }); \
 		return make_thunk(f);						\
 	}()
 
