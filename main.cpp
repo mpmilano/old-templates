@@ -88,10 +88,10 @@ int main(int, char**){
 	for (auto foo : xlnagla::map(times2,{1,2,3,4}) )
 		cout << foo << endl;
 
-	auto curried = curry2([](int a, int b){ return a + b;});
+    auto curried = curry([](int a, int b){ return a + b;});
 	std::cout << curried(1)(2) << std::endl;
     std::function<int (int, int) > operatortest = [](int a, int b){ return a + b;};
-    std::cout << curry2(operatortest)(1)(2) << std::endl;
+    std::cout << curry(operatortest)(1)(2) << std::endl;
 
 	std::function<int (int, int, int) > othercurry = [](int a, int b, int c){return a + b + c;};
 	std::cout << curry(curry(othercurry)(1))(2)(3) << endl;

@@ -177,17 +177,19 @@ template<typename T>
 }
 
     template<typename R, typename A, typename... B>
-        inline const std::function< std::function<R (B...)> (A) > curry(std::function<R (A, B...)> f){
+        inline const std::function< std::function<R (B...)> (A) > curry_helper(std::function<R (A, B...)> f){
         return [f](A a){
             return [a, f](B... b){
                 return f(a, b...);
             };
         };
     }
+    #define FTYPE xlnagla::lambda_to_function<T>::function_type
     template<typename T>
-        inline const std::function< std::function<typename convert_2_helper<T>::rettype (typename convert_2_helper<T>::arg2type)> (typename convert_2_helper<T>::argtype) > curry2(T t){
-        return curry(convert_to_2arg_function(t));
+inline const auto curry(T t) -> decltype(curry_helper(xlnagla::proper_convert_to_function(t))){
+        return curry_helper(proper_convert_to_function(t));
     }
+#undef FTYPE
 
 
     template<typename T, typename A, typename L>
