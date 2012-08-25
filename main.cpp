@@ -4,10 +4,17 @@
 #include <iostream>
 #include <string>
 #include "memoize.h"
+#include <list>
 
+int overloaded_f(std::list<std::string>, std::list<std::string>){
+    return 0;
+}
 
+int overloaded_f(std::string, std::string){
+    return 1;
+}
 
-int main(int argc, char**){
+int main(int, char**){
 
     using namespace std;
 	using namespace xlnagla;
@@ -59,26 +66,32 @@ int main(int argc, char**){
 
 	cout << xlnagla::foldl(fadd, {1,2,3,4, 5}) << endl;
 
+
 	auto unique1 = unique_ptr<string>(new string(a));
 	auto unique2 = std::move(unique1);
 
 	auto lazy1 = make_unique_thunk(test);
 	auto lazy2 = std::move(lazy1);
 
+    int (*deal_with_overload)(string, string) =overloaded_f;
+    auto overloaded_curry=curry(std::function<int (string, string)>(deal_with_overload));
+
 	cout << lazy_cond(
 		&abool, a, 
 		&bbool, b, 
 		c) << endl;
 
-	cout << cond(abool, a, bbool, b, c ) << endl;
-
+	cout << cond(abool, a, bbool, b, c ) << endl;  
 	std::function<int (int)> times2 = [](int i){return i*2;};
+    assert (has_n_arguments(times2, 1));
 
 	for (auto foo : xlnagla::map(times2,{1,2,3,4}) )
 		cout << foo << endl;
 
 	auto curried = curry2([](int a, int b){ return a + b;});
 	std::cout << curried(1)(2) << std::endl;
+    std::function<int (int, int) > operatortest = [](int a, int b){ return a + b;};
+    std::cout << curry2(operatortest)(1)(2) << std::endl;
 
 	std::function<int (int, int, int) > othercurry = [](int a, int b, int c){return a + b + c;};
 	std::cout << curry(curry(othercurry)(1))(2)(3) << endl;
@@ -86,6 +99,6 @@ int main(int argc, char**){
 
 	auto convert_to_function_non_macro_test = convert_to_function([&](int i){return i;});
 
-	auto convert_to_2arg_function_test = convert_to_2arg_function([&](int i, double j){return std::string("foo");});
+    auto convert_to_2arg_function_test = convert_to_2arg_function([&](int, double){return std::string("foo");});
 
 }
