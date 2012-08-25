@@ -3,7 +3,7 @@
 
 namespace xlnagla{
 
-template<typename T, std::launch lnch = std::launch::any>
+template<typename T, std::launch lnch = std::launch::async | std::launch::deferred>
 class thunk{
 
 private:
@@ -19,7 +19,7 @@ operator T(){return value.get();}
 };
 
 
-template<class T, std::launch lnch = std::launch::sync >
+template<class T, std::launch lnch = std::launch::deferred >
 	thunk<T, lnch> make_thunk( std::function<T ()> t){
 	return std::move(thunk<T, lnch>(t));
 }

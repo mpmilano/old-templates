@@ -9,7 +9,7 @@
 namespace xlnagla{
 
 
-	template<class T, std::launch lnch = std::launch::any, class Del = std::default_delete<T> >
+	template<class T, std::launch lnch = std::launch::async | std::launch::deferred, class Del = std::default_delete<T> >
 		class unique_thunk{
 	private:
 	std::future<T*> f;
@@ -111,11 +111,11 @@ unique_thunk& operator=(const unique_thunk& ) = delete;
 
 };
 
-/*	template<class T, std::launch lnch = std::launch::sync, class Del = std::default_delete<T> >
+/*	template<class T, std::launch lnch = std::launch::deferred, class Del = std::default_delete<T> >
 		unique_thunk<T, lnch, Del> make_unique_thunk(const std::function<T* ()> &t){
 		return std::move(unique_thunk<T, lnch, Del>(t));
 		}*/
-	template<class T, std::launch lnch = std::launch::sync, class Del = std::default_delete<T> >
+	template<class T, std::launch lnch = std::launch::deferred, class Del = std::default_delete<T> >
 		unique_thunk<T, lnch, Del> make_unique_thunk( std::function<T* ()> t){
 		return std::move(unique_thunk<T, lnch, Del>(t));
 	}

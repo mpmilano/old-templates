@@ -9,8 +9,8 @@ class shared_thunkList
 
 public:
 
-	shared_thunk<T, std::launch::async> elem;
-	shared_thunk<shared_thunkList<T>, std::launch::async > next;
+	shared_thunk<T, std::launch::deferred> elem;
+	shared_thunk<shared_thunkList<T>, std::launch::deferred > next;
 
 	shared_thunkList(std::function<T* () > elem, std::function<shared_thunkList<T>* () > next):elem(elem),next(next){}
 	static shared_thunkList* make_list(std::function<T* () > elem, std::function<shared_thunkList<T>* () > next){
