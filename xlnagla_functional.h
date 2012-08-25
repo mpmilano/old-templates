@@ -21,6 +21,9 @@ namespace xlnagla{
         template<typename F, typename Ret, typename... Args>
         Ret return_helper(Ret (F::*)(Args...) const);
 
+        template<typename F, typename Ret, typename... Args>
+        std::function<Ret (Args...)> function_helper(Ret (F::*)(Args...) const);
+
     template<typename F, typename Ret, typename A, typename B, typename... Rest>
         B second_argument_helper(Ret (F::*)(A, B, Rest...));
 
@@ -57,6 +60,18 @@ namespace xlnagla{
             return num_args(&T::operator()) == i;
         }
 
+
+        template<int want, typename... T>
+        class ith_type{
+        private:
+            template<int desired, int current, typename A, typename... B>
+            struct ith_type_helper{
+                typedef std::conditional<desired == current, A, ith_type_helper<desired, current+1, B...> > type;
+            };
+        public:
+            typedef ith_type_helper<want, 0, T...> type;
+        };
+
         template<typename A, typename... B>
         struct args_list{
             typedef A arg;
@@ -64,16 +79,23 @@ namespace xlnagla{
             typedef std::conditional<sizeof...(B) == 0 , void , args_list<B...> > next;
         };
 
+
+        template<typename F, typename Ret, typename... Args>
+        args_list<Args...> args_list_helper(Ret (F::*)(Args...) const);
+
+        template<typename F, typename Ret, typename... Args>
+        constexpr int args_size(Ret (F::*)(Args...) const){
+            return sizeof...(Args);
+        }
+
+
         template<typename F>
         struct labmda_to_function{
             typedef decltype(return_helper(&F::operator())) return_type;
-/*            typedef std::function<
-            //do it the derpy way for now
-            std::conditional<has_n_arguments_lambda<F, 0>,return_type (),
-            std::conditional<has_n_arguments_lambda<F, 1>, return_type (xlnagla::first_argument)>
-            > function_type;
-            /*static constexpr args_list<A...> args = args_list<A...>();
-            static constexpr int num_args = sizeof...(A);*/
+            typedef decltype(function_helper(&F::operator())) function_type;
+            typedef decltype(args_list_helper(&F::operator())) args_list_type;
+            static constexpr args_list_type args = args_list_type();
+            static constexpr int num_args = args_size(&F::operator());
         };
 
 
