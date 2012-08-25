@@ -18,6 +18,9 @@ namespace xlnagla{
     template<typename F, typename Ret, typename A, typename... Rest>
         A helper(Ret (F::*)(A, Rest...) const);
 
+        template<typename F, typename Ret, typename... Args>
+        Ret return_helper(Ret (F::*)(Args...) const);
+
     template<typename F, typename Ret, typename A, typename B, typename... Rest>
         B second_argument_helper(Ret (F::*)(A, B, Rest...));
 
@@ -49,6 +52,10 @@ namespace xlnagla{
         constexpr bool has_n_arguments(T f, int i){
                 return num_args(f) == i;
             }
+        template<typename T, int i>
+        constexpr bool has_n_arguments_lambda(){
+            return num_args(&T::operator()) == i;
+        }
 
         template<typename A, typename... B>
         struct args_list{
@@ -57,12 +64,16 @@ namespace xlnagla{
             typedef std::conditional<sizeof...(B) == 0 , void , args_list<B...> > next;
         };
 
-        template<typename R, typename F, typename... A>
+        template<typename F>
         struct labmda_to_function{
-            typedef std::function< R (A...)> function_type;
-            typedef R return_type;
-            static constexpr args_list<A...> args = args_list<A...>();
-            static constexpr int num_args = sizeof...(A);
+            typedef decltype(return_helper(&F::operator())) return_type;
+/*            typedef std::function<
+            //do it the derpy way for now
+            std::conditional<has_n_arguments_lambda<F, 0>,return_type (),
+            std::conditional<has_n_arguments_lambda<F, 1>, return_type (xlnagla::first_argument)>
+            > function_type;
+            /*static constexpr args_list<A...> args = args_list<A...>();
+            static constexpr int num_args = sizeof...(A);*/
         };
 
 
