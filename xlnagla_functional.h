@@ -90,7 +90,7 @@ namespace xlnagla{
 
 
         template<typename F>
-        struct labmda_to_function{
+        struct lambda_to_function{
             typedef decltype(return_helper(&F::operator())) return_type;
             typedef decltype(function_helper(&F::operator())) function_type;
             typedef decltype(args_list_helper(&F::operator())) args_list_type;
@@ -99,9 +99,9 @@ namespace xlnagla{
         };
 
         template<typename F>
-        lambda_to_function<F>::function_type proper_convert_to_function(F f){
-            lambda_to_function<F>::function_type = f;
-            return std::move(f);
+        typename lambda_to_function<F>::function_type proper_convert_to_function(F f){
+            typename lambda_to_function<F>::function_type ret = f;
+            return std::move(ret);
         }
 
 
