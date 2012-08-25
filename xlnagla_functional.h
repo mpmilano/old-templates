@@ -98,6 +98,12 @@ namespace xlnagla{
             static constexpr int num_args = args_size(&F::operator());
         };
 
+        template<typename F>
+        lambda_to_function<F>::function_type proper_convert_to_function(F f){
+            lambda_to_function<F>::function_type = f;
+            return std::move(f);
+        }
+
 
 
 
