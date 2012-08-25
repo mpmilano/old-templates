@@ -57,27 +57,13 @@ namespace xlnagla{
             typedef std::conditional<sizeof...(B) == 0 , void , args_list<B...> > next;
         };
 
-        template<typename F>
+        template<typename R, typename F, typename... A>
         struct labmda_to_function{
             typedef std::function< R (A...)> function_type;
             typedef R return_type;
             static constexpr args_list<A...> args = args_list<A...>();
             static constexpr int num_args = sizeof...(A);
         };
-
-        template<typename R, typename F, typename... A>
-        lambda_to_function<R, F, A...>::function_type new_convert_to_function(F f){
-
-        }
-
-        template<typename T>
-            inline const
-            std::function<
-            std::function<
-            typename convert_2_helper<T>::rettype (typename convert_2_helper<T>::arg2type)> (typename convert_2_helper<T>::argtype) > curry2(T t){
-            return curry(convert_to_2arg_function(t));
-        }
-
 
 
 
