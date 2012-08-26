@@ -86,6 +86,10 @@ int main(int, char**){
 
 	for (auto foo : xlnagla::map(times2,{1,2,3,4}) )
 		cout << foo << endl;
+    cout << times2(4) << " make sure persists after rvalue" <<endl;
+    for (auto foo : xlnagla::map([](int i){return i*2;},{1,2,3,4}) )
+        cout << foo << endl;
+
 
     auto curried = curry([](int a, int b){ return a + b;});
 	std::cout << curried(1)(2) << std::endl;

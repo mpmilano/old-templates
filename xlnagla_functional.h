@@ -100,17 +100,37 @@ inline const auto curry(T &&t) -> decltype(curry_helper(xlnagla::convert_to_func
 
 
 template<typename T, typename A, typename L>
-std::list<T> map(std::function<T (A)> f, const L& list){
+std::list<T> map2(const std::function<T (A)> &f, const L& list){
     std::list<T> ret;
     std::transform(std::begin(list), std::end(list),std::back_inserter(ret), f);
     return std::move(ret);
 }
 
 template<typename T, typename A>
-std::list<T> map(std::function<T (A)> f, const std::initializer_list<A>& list){
+std::list<T> map2(const std::function<T (A)> &f, const std::initializer_list<A>& list){
     std::list<T> ret;
     std::transform(std::begin(list), std::end(list),std::back_inserter(ret), f);
     return std::move(ret);
+}
+/*
+template<typename F, typename L>
+auto map(F &f, const L& l) -> decltype(map2(convert_to_function(f),l)){
+    return map2(convert_to_function(f),l);
+}
+
+template<typename F, typename A>
+auto map(F &f, const std::initializer_list<A>& l) -> decltype(map2(convert_to_function(f),l)){
+    return map2(convert_to_function(f),l);
+}
+*/
+template<typename F, typename L>
+auto map(F &&f, const L& l) -> decltype(map2(convert_to_function(f),l)){
+    return map2(convert_to_function(f),l);
+}
+
+template<typename F, typename A>
+auto map(F &&f, const std::initializer_list<A>& l) -> decltype(map2(convert_to_function(f),l)){
+    return map2(convert_to_function(f),l);
 }
 
 template<typename T, typename L>
