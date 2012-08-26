@@ -21,14 +21,36 @@ public:
     typedef ith_type_helper<want, 0, T...> type;
 };
 
+template<typename R, typename... A>
+constexpr bool is_fp(R (*)(A...)){
+    return true;
+}
+template<typename other>
+constexpr bool is_fp(other *){
+    return false;
+}
+template<typename other>
+constexpr bool is_fp(other &){
+    return false;
+}
+
+
 template<typename FF>
 class function_properties{
 private:
     template<typename F, typename Ret, typename... Args>
     static Ret return_helper(Ret (F::*)(Args...) const);
 
+    template<typename Ret, typename... Args>
+    static Ret fp_return_helper(Ret (*)(Args...));
+
+
     template<typename F, typename Ret, typename... Args>
     static std::function<Ret (Args...)> function_helper(Ret (F::*)(Args...) const);
+
+    template<typename Ret, typename... Args>
+    static std::function<Ret (Args...)> fp_function_helper(Ret (*)(Args...));
+
 
     template<typename A, typename... B>
     struct args_list{
@@ -47,9 +69,12 @@ private:
     static constexpr int args_size(Ret (F::*)(Args...) const){
         return sizeof...(Args);
     }
+
 public:
 
-    typedef decltype(return_helper(&FF::operator())) return_type;
+    typedef std::conditional<
+    std::is_function<FF>::value,  void,
+    decltype(return_helper(&FF::operator()))> return_type;
     typedef decltype(function_helper(&FF::operator())) function_type;
     static constexpr int num_args = args_size(&FF::operator());
     /* typedef std::conditional< num_args == 0 , void* , decltype(args_list_helper(&F::operator())) > args_list_type;
@@ -63,14 +88,16 @@ typename function_properties<F>::function_type convert_to_function(F f){
     return std::move(ret);
 }
 
-template<typename F>
-typename function_properties<F>::function_type copy_to_function(F f){
-    typename function_properties<F>::function_type ret = std::move(f);
-    return std::move(ret);
+template<typename R, typename... A>
+std::function<R (A...) > convert_to_function(R (*f)(A...)){
+    std::function<R (A...) > ret = f;
+    return ret;
 }
 
+
+
 template<typename R, typename... A>
-bool is_function(const std::function<R (A...)>*){
+bool is_function(const std::function<R (A...)>){
     return true;
 }
 

@@ -14,6 +14,10 @@ int overloaded_f(std::string, std::string){
     return 1;
 }
 
+int function_pointer(int i){
+    return i;
+}
+
 int main(int, char**){
 
     using namespace std;
@@ -89,6 +93,13 @@ int main(int, char**){
     cout << times2(4) << " make sure persists after rvalue" <<endl;
     for (auto foo : xlnagla::map([](int i){return i*2;},{1,2,3,4}) )
         cout << foo << endl;
+        auto fp = convert_to_function<int, int>(function_pointer);
+        assert(is_fp(function_pointer));
+        assert(!is_fp(fp));
+/*        for (auto foo : xlnagla::map(function_pointer,{1,2,3,4}) )
+            cout << foo << endl;
+*/
+
 
 
     auto curried = curry([](int a, int b){ return a + b;});
