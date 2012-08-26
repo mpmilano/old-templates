@@ -94,6 +94,7 @@ int main(int, char**){
     auto curried = curry([](int a, int b){ return a + b;});
 	std::cout << curried(1)(2) << std::endl;
     std::function<int (int, int) > operatortest = [](int a, int b){ return a + b;};
+    assert(xlnagla::is_function(operatortest));
     std::cout << curry(operatortest)(1)(2) << std::endl;
 
 	std::function<int (int, int, int) > othercurry = [](int a, int b, int c){return a + b + c;};

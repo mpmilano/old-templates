@@ -63,6 +63,22 @@ typename function_properties<F>::function_type convert_to_function(F f){
     return std::move(ret);
 }
 
+template<typename F>
+typename function_properties<F>::function_type copy_to_function(F f){
+    typename function_properties<F>::function_type ret = std::move(f);
+    return std::move(ret);
+}
+
+template<typename R, typename... A>
+bool is_function(const std::function<R (A...)>*){
+    return true;
+}
+
+template<typename F>
+bool is_function(const F){
+    return false;
+}
+
 //this is better as a macro
 //the base case is the last argument.
 template<typename T>
@@ -86,7 +102,7 @@ inline const T& lazy_cond(const B& acond, const T& res, const L&... l){
 }
 
 template<typename R, typename A, typename... B>
-inline const std::function< std::function<R (B...)> (A) > curry_helper(std::function<R (A, B...)> &&f){
+inline const std::function< std::function<R (B...)> (A) > curry_helper(std::function<R (A, B...)> f){
     return [f](A a){
             return [a, f](B... b){
             return f(a, b...);
@@ -94,7 +110,7 @@ inline const std::function< std::function<R (B...)> (A) > curry_helper(std::func
 };
 }
 template<typename T>
-inline const auto curry(T &&t) -> decltype(curry_helper(xlnagla::convert_to_function(t))){
+inline const auto curry(T t) -> decltype(curry_helper(xlnagla::convert_to_function(t))){
     return curry_helper(convert_to_function(t));
 }
 
