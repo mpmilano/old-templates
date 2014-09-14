@@ -95,7 +95,6 @@ std::function<R (A...) > convert_to_function(R (*f)(A...)){
 }
 
 
-
 template<typename R, typename... A>
 bool is_function(const std::function<R (A...)>){
     return true;
@@ -137,7 +136,7 @@ inline const std::function< std::function<R (B...)> (A) > curry_helper(std::func
 };
 }
 template<typename T>
-inline const auto curry(T t) -> decltype(curry_helper(xlnagla::convert_to_function(t))){
+inline auto curry(T t) -> const decltype(curry_helper(xlnagla::convert_to_function(t))){
     return curry_helper(convert_to_function(t));
 }
 
